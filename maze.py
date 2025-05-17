@@ -34,7 +34,7 @@ class Maze:
 
     def animate(self):
         self.win.redraw()
-        time.sleep(0.025)
+        time.sleep(0.05)
 
     def break_entrance_and_exit(self):
         self.cells[0][0].has_top_wall = False
@@ -79,6 +79,48 @@ class Maze:
                     self.cells[chosen_x][chosen_y].has_bottom_wall = False
                     self.draw_cell(chosen_x, chosen_y)
                 self.break_walls_r(chosen_x, chosen_y)
+
+    def reset_cells_visited(self):
+        for each in self.cells:
+            for row in each:
+                row.visited = False
+
+    def solve(self):
+        return self.solve_r(0, 0)
+    
+    def solve_r(self, x, y):
+        self.animate()
+        self.cells[x][y].visited = True
+        # Checks if this cell is the end cell
+        if x == len(self.cells) - 1 and y == len(self.cells[x]) - 1:
+            return True
+        # Checks if it can move left
+        if x > 0 and self.cells[x][y].has_left_wall == False and self.cells[x-1][y].visited == False:
+            self.cells[x][y].draw_move(self.cells[x-1][y])
+            if self.solve_r(x-1, y):
+                return True
+            self.cells[x-1][y].draw_move(self.cells[x][y], True)
+        # Checks if it can move right
+        if x < len(self.cells) - 1 and self.cells[x][y].has_right_wall == False and self.cells[x+1][y].visited == False:
+            self.cells[x][y].draw_move(self.cells[x+1][y])
+            if self.solve_r(x+1, y):
+                return True
+            self.cells[x+1][y].draw_move(self.cells[x][y], True)
+        # Checks if it can move down
+        if y < len(self.cells[x]) - 1 and self.cells[x][y].has_bottom_wall == False and self.cells[x][y+1].visited == False:
+            self.cells[x][y].draw_move(self.cells[x][y+1])
+            if self.solve_r(x, y+1):
+                return True
+            self.cells[x][y+1].draw_move(self.cells[x][y], True)
+        # Checks if it can move up
+        if y > 0 and self.cells[x][y].has_top_wall == False and self.cells[x][y-1].visited == False:
+            self.cells[x][y].draw_move(self.cells[x][y-1])
+            if self.solve_r(x, y-1):
+                return True
+            self.cells[x][y-1].draw_move(self.cells[x][y], True)
+        return False
+            
+        
 
 
         

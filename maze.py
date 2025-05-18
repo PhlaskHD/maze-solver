@@ -4,14 +4,23 @@ import time
 import random
 
 class Maze:
-    def __init__(self, x1, y1, num_rows, num_cols, cell_size_x, cell_size_y, win, seed=None):
-        self.x1 = x1
-        self.y1 = y1
+    def __init__(self, num_rows, num_cols, win, seed=None):
         self.num_rows = num_rows
         self.num_cols = num_cols
-        self.cell_size_x = cell_size_x
-        self.cell_size_y = cell_size_y
         self.win = win
+        constraint = min(self.win.height, self.win.width) - 100
+        if min(self.win.height, self.win.width) == self.win.width:
+            self.cell_size_x = constraint / self.num_cols
+            self.cell_size_y = constraint / self.num_cols
+            height = self.num_rows * self.cell_size_y
+            self.x1 = 50
+            self.y1 = max(50, (self.win.height//2) - (height//2))
+        else:
+            self.cell_size_x = constraint / self.num_rows
+            self.cell_size_y = constraint / self.num_rows
+            width = self.num_cols * self.cell_size_x
+            self.x1 = max(50, (self.win.width//2) - (width//2))
+            self.y1 = 50
         if seed != None:
             random.seed(seed)
         self.cells = []
@@ -30,11 +39,11 @@ class Maze:
         x2 = x + self.cell_size_x
         y2 = y + self.cell_size_y
         self.cells[i][j].draw(x, y, x2, y2)
-        self.animate()
+        self.animate(0.005)
 
-    def animate(self):
+    def animate(self, speed):
         self.win.redraw()
-        time.sleep(0.05)
+        time.sleep(speed)
 
     def break_entrance_and_exit(self):
         self.cells[0][0].has_top_wall = False
@@ -89,7 +98,7 @@ class Maze:
         return self.solve_r(0, 0)
     
     def solve_r(self, x, y):
-        self.animate()
+        self.animate(0.025)
         self.cells[x][y].visited = True
         # Checks if this cell is the end cell
         if x == len(self.cells) - 1 and y == len(self.cells[x]) - 1:
